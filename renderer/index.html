@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8"/>
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'"/>
+  <title>AI Integration Architecture Toolkit</title>
+  <link rel="stylesheet" href="app.css"/>
+</head>
+<body>
+
+<!-- ── Top Bar ─────────────────────────────────────────────────────────── -->
+<div id="topbar">
+  <span class="logo">🏗 AI Integration Toolkit</span>
+  <span class="model-name" id="topbar-model-name">No model open / 未打开模型</span>
+  <span class="spacer"></span>
+  <button class="btn btn-sm btn-secondary" onclick="App.newModel()">+ New / 新建</button>
+  <button class="btn btn-sm btn-secondary" onclick="App.openFile()">Open / 打开</button>
+  <button class="btn btn-sm btn-primary"   onclick="App.exportModel()">Export .archimate</button>
+  <button class="btn btn-sm btn-success"   onclick="App.runComplianceCheck()">✓ Compliance Check</button>
+</div>
+
+<!-- ── Layout ───────────────────────────────────────────────────────────── -->
+<div id="layout">
+
+  <!-- Sidebar -->
+  <div id="sidebar">
+    <div id="sidebar-header">Model / 模型结构</div>
+    <div id="sidebar-tree">
+      <div id="tree-placeholder" class="text-muted" style="padding:14px;line-height:1.7;font-size:12px;">
+        Create or open a model to start.<br>新建或打开模型开始建模。
+      </div>
+    </div>
+    <div id="sidebar-actions">
+      <button class="btn btn-sm btn-primary btn-full" onclick="App.showAddElement()" id="btn-add-element" disabled>
+        + Add Element / 添加元素
+      </button>
+    </div>
+  </div>
+
+  <!-- Main area -->
+  <div id="main">
+    <!-- Welcome screen (shown when no model open) -->
+    <div id="welcome">
+      <div class="welcome-logo">🏗️</div>
+      <div class="welcome-title">AI Integration Architecture Toolkit</div>
+      <div class="welcome-sub">
+        Model AI integration using ArchiMate 3.2 and Distributed Situation Awareness theory.<br>
+        基于ArchiMate 3.2和分布式态势感知理论的AI集成架构建模工具。<br><br>
+        Standalone — no Archi installation required. Exports valid <code>.archimate</code> files.<br>
+        独立运行，无需安装Archi工具。可导出标准.archimate文件。
+      </div>
+      <div class="welcome-actions">
+        <button class="btn btn-primary" onclick="App.newModel()">✨ New Model / 新建模型</button>
+        <button class="btn btn-secondary" onclick="App.openFile()">📂 Open .archimate / 打开文件</button>
+      </div>
+    </div>
+
+    <!-- Model dashboard (hidden until model is open) -->
+    <div id="page-dashboard" class="hidden">
+      <div class="page-header">
+        <div>
+          <div class="page-title" id="dashboard-title">Model Name</div>
+          <div class="page-subtitle">Model Overview / 模型概览</div>
+        </div>
+        <div class="page-actions">
+          <button class="btn btn-secondary" onclick="App.runComplianceCheck()">✓ Compliance Check</button>
+          <button class="btn btn-primary" onclick="App.exportModel()">Export .archimate</button>
+        </div>
+      </div>
+
+      <div class="stats-row" id="stats-row"></div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">🤖 AI Application Elements</div>
+          <button class="btn btn-sm btn-primary" onclick="App.showAddElement('ai-app')">+ Add</button>
+        </div>
+        <div id="ai-app-list"><div class="text-muted" style="font-size:13px;">No AI Applications yet. Click "+ Add" to create one.</div></div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">📦 AI Model Elements</div>
+          <button class="btn btn-sm btn-secondary" onclick="App.showAddElement('ai-model')">+ Add</button>
+        </div>
+        <div id="ai-model-list"><div class="text-muted" style="font-size:13px;">No AI Models yet.</div></div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">📊 Diagnostic Assessments</div>
+          <button class="btn btn-sm btn-secondary" onclick="App.showAddElement('assessment')">+ Add</button>
+        </div>
+        <div id="assessment-list"><div class="text-muted" style="font-size:13px;">No Assessments yet.</div></div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">👥 Business Roles</div>
+          <button class="btn btn-sm btn-secondary" onclick="App.showAddElement('role')">+ Add</button>
+        </div>
+        <div id="role-list"><div class="text-muted" style="font-size:13px;">No Business Roles yet.</div></div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">🚧 Organizational Constraints</div>
+          <button class="btn btn-sm btn-secondary" onclick="App.showAddElement('constraint')">+ Add</button>
+        </div>
+        <div id="constraint-list"><div class="text-muted" style="font-size:13px;">No Constraints yet.</div></div>
+      </div>
+    </div>
+
+    <!-- Element editor (hidden until element selected) -->
+    <div id="page-element" class="hidden">
+      <div class="page-header">
+        <div>
+          <div class="page-title" id="el-title"></div>
+          <div class="page-subtitle" id="el-subtitle"></div>
+        </div>
+        <div class="page-actions">
+          <button class="btn btn-sm btn-secondary" onclick="App.showDashboard()">← Back / 返回</button>
+          <button class="btn btn-sm btn-danger" onclick="App.deleteCurrentElement()">Delete / 删除</button>
+        </div>
+      </div>
+
+      <!-- Profile tabs -->
+      <div class="tabs" id="profile-tabs"></div>
+      <div id="profile-panels"></div>
+    </div>
+
+    <!-- Add element page -->
+    <div id="page-add-element" class="hidden">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Add Element / 添加元素</div>
+          <div class="page-subtitle">Create a new model element / 创建新的模型元素</div>
+        </div>
+        <div class="page-actions">
+          <button class="btn btn-sm btn-secondary" onclick="App.showDashboard()">← Cancel / 取消</button>
+        </div>
+      </div>
+      <div class="card" style="max-width:600px;">
+        <div class="form-group">
+          <label class="form-label"><span class="cn">元素类型</span> (Element Type) <span class="required">*</span></label>
+          <select class="form-control" id="new-el-type" onchange="App.updateAddForm()">
+            <option value="ai-app">🤖 «AI Application» — Application Component (specialization)</option>
+            <option value="ai-model">📦 «AI Model» — Data Object (specialization)</option>
+            <option value="assessment">📊 «AI Diagnostic Assessment» — Assessment (specialization)</option>
+            <option value="role">👤 Business Role — 业务角色</option>
+            <option value="actor">👥 Business Actor — 业务参与者</option>
+            <option value="process">⚙️ Business Process — 业务流程</option>
+            <option value="function">🏢 Business Function — 业务职能（部门）</option>
+            <option value="constraint">🚧 Constraint — 约束</option>
+            <option value="stakeholder">🎯 Stakeholder — 利益相关方</option>
+            <option value="driver">🔥 Driver — 驱动力</option>
+            <option value="goal">🏆 Goal — 目标</option>
+            <option value="principle">📜 Principle — 原则</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label"><span class="cn">名称</span> (Name) <span class="required">*</span></label>
+          <input class="form-control" type="text" id="new-el-name" placeholder="e.g., Customer Service AI Bot"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label"><span class="cn">描述</span> (Description)</label>
+          <textarea class="form-control" id="new-el-desc" rows="3" placeholder="Optional description..."></textarea>
+        </div>
+        <div id="new-el-hint" class="warning-box hidden"></div>
+        <button class="btn btn-primary" onclick="App.createNewElement()" style="margin-top:8px;">Create Element / 创建元素</button>
+      </div>
+    </div>
+
+    <!-- Compliance check results page -->
+    <div id="page-compliance" class="hidden">
+      <div class="page-header">
+        <div>
+          <div class="page-title">✓ Compliance Check / 合规检查</div>
+          <div class="page-subtitle" id="compliance-subtitle"></div>
+        </div>
+        <div class="page-actions">
+          <button class="btn btn-sm btn-secondary" onclick="App.showDashboard()">← Back / 返回</button>
+          <button class="btn btn-sm btn-primary" onclick="App.runComplianceCheck()">Re-run / 重新运行</button>
+        </div>
+      </div>
+      <div id="compliance-results"></div>
+    </div>
+
+  </div><!-- #main -->
+</div><!-- #layout -->
+
+<script src="profiles-schema.js"></script>
+<script src="compliance-checker.js"></script>
+<script src="archimate-generator.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

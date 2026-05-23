@@ -1,0 +1,46 @@
+{
+  "name": "ai-integration-archimate-toolkit",
+  "productName": "AI Integration Architecture Toolkit",
+  "version": "1.0.0",
+  "description": "Standalone desktop tool for modeling AI integration using ArchiMate 3.2 and DSA theory. DSR paper design artifact.",
+  "main": "main.js",
+  "author": "Moon (PhD Candidate, UKM)",
+  "license": "MIT",
+  "scripts": {
+    "start": "ELECTRON_RUN_AS_NODE= electron .",
+    "build:mac": "electron-builder --mac",
+    "build:win": "electron-builder --win",
+    "build:all": "electron-builder --mac --win"
+  },
+  "devDependencies": {
+    "electron": "^39.8.10",
+    "electron-builder": "^24.0.0"
+  },
+  "build": {
+    "appId": "com.moon.ai-integration-toolkit",
+    "productName": "AI Integration Architecture Toolkit",
+    "directories": {
+      "output": "dist"
+    },
+    "mac": {
+      "category": "public.app-category.developer-tools",
+      "icon": "assets/icon.icns",
+      "target": [
+        "dmg",
+        "zip"
+      ]
+    },
+    "win": {
+      "icon": "assets/icon.ico",
+      "target": [
+        "nsis",
+        "portable"
+      ]
+    },
+    "linux": {
+      "target": [
+        "AppImage"
+      ]
+    }
+  }
+}

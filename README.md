@@ -202,7 +202,7 @@ Output goes to `dist/`. Built with [electron-builder](https://www.electron.build
 
 ## Author
 
-**Moon** — PhD Candidate, Faculty of Information Science and Technology, Universiti Kebangsaan Malaysia (UKM)
+**Yuxuan Zhu** — PhD, Universiti Kebangsaan Malaysia (UKM)
 
 Research: AI integration failure in established organizations through the lens of Distributed Situation Awareness theory.
 

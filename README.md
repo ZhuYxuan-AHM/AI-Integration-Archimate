@@ -1,4 +1,4 @@
-# AI Integration Architecture Toolkit
+# AI Integration Architecture
 
 > A standalone desktop tool for modeling AI integration in established organizations using **ArchiMate 3.2** and **Distributed Situation Awareness (DSA)** theory.
 >
